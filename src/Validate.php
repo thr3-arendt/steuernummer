@@ -29,7 +29,7 @@ class Validate extends Common
 
     public function __construct(string $elsterSteuernummer, ?string $federalState = null)
     {
-        $this->result = new ValidationResult();
+        $this->result = new ValidationResult;
         $this->elsterSteuernummer = $elsterSteuernummer;
 
         try {

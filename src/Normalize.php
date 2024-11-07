@@ -19,7 +19,7 @@ class Normalize extends Common
 
     public function __construct(string $steuernummer, string $federalState)
     {
-        $this->result = new NormalizationResult();
+        $this->result = new NormalizationResult;
         $this->result->setInput($steuernummer);
         $this->steuernummer = (string) preg_replace('/\D/', '', $steuernummer); // Consider only digits
         $this->federalState = $federalState;

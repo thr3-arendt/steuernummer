@@ -17,7 +17,7 @@ class Denormalize extends Common
 
     public function __construct(string $elsterSteuernummer, ?string $federalState = null)
     {
-        $this->result = new DenormalizationResult();
+        $this->result = new DenormalizationResult;
         $this->result->setInput($elsterSteuernummer);
         $this->elsterSteuernummer = $elsterSteuernummer;
 

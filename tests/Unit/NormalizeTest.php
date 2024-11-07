@@ -65,7 +65,7 @@ it('runs with int values as steuernummer', function () {
 });
 
 it('fails when steuernummer is not string(able)', function () {
-    $input = new stdClass();
+    $input = new stdClass;
     /** @noinspection PhpParamsInspection @phpstan-ignore-next-line */
     new Normalize($input, 'XX');
 })->throws(TypeError::class);
@@ -86,7 +86,7 @@ it('fails on invalid federal states', function () {
 })->throws(Exceptions\InvalidFederalState::class);
 
 it('fails when federalState is not string(able)', function () {
-    $input = new stdClass();
+    $input = new stdClass;
     /** @noinspection PhpParamsInspection @phpstan-ignore-next-line */
     new Normalize('1121081508150', $input);
 })->throws(TypeError::class);
