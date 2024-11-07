@@ -10,9 +10,10 @@
 
 Formats bidirectionally German tax numbers originating from tax office letters (German: Bescheidformat) or the ELSTER-Format (German: bundeseinheitliches ELSTER-Steuernummerformat) and validates it.
 
-Based on the [official ELSTER documentation](https://download.elster.de/download/schnittstellen/Pruefung_der_Steuer_und_Steueridentifikatsnummer.pdf) (chapters: 3-7; as of 2024-06-17). Inspired by [kontist/normalize-steuernummer](https://github.com/kontist/normalize-steuernummer) and [kontist/denormalize-steuernummer](https://github.com/kontist/denormalize-steuernummer).
+Based on the [official ELSTER documentation](https://download.elster.de/download/schnittstellen/Pruefung_der_Steuer_und_Steueridentifikatsnummer.pdf) (chapters: 3 - 7; as of 2024-09-03). Inspired by [kontist/normalize-steuernummer](https://github.com/kontist/normalize-steuernummer) and [kontist/denormalize-steuernummer](https://github.com/kontist/denormalize-steuernummer).
 
-Hint: This package validates solely the syntax and check digit of the provided input. It does not confirm, that the provided Steuernummer was assigned to any entity. Please contact the responsible tax office in case of any doubts concerning the correctness of your Steuernummer.
+> [!NOTE]
+> This package validates solely the syntax and check digit of the provided input. It does not confirm, that the provided Steuernummer was assigned to any entity. Please contact the responsible tax office in case of any doubts concerning the correctness of your Steuernummer.
 
 ## Installation
 
@@ -39,7 +40,8 @@ use Rechtlogisch\Steuernummer\Normalize;
     ->returnElsterSteuernummerOnly(); // => '1121081508150'
 ```
 
-Hint: you can use `run()` instead, if you want more details.
+> [!TIP]
+> You can use `run()` instead, if you want more details.
 
 ### Denormalize
 
@@ -56,7 +58,8 @@ use Rechtlogisch\Steuernummer\Denormalize;
     ->returnSteuernummerOnly(); // => '21/815/08150'
 ```
 
-Hint: you can use `run()` instead, if you want more details.
+> [!TIP]
+> You can use `run()` instead, if you want more details.
 
 #### Details
 
@@ -82,8 +85,8 @@ use Rechtlogisch\Steuernummer\Denormalize;
 //   'federalState' => 'BE',
 // ]
 ```
-
-Hint: you can use `run()` instead, if you want even more details.
+> [!TIP]
+> You can use `run()` instead, if you want even more details.
 
 ### Validate
 
@@ -99,7 +102,8 @@ or by providing the so called [Bescheidformat](https://www.elster.de/eportal/hel
 isSteuernummerValid('21/815/08150', 'BE'); // => true
 ```
 
-Hint: Notice, that there are two functions `isElsterSteuernummerValid()` and `isSteuernummerValid()` depending on the format of your input.
+> [!NOTE]
+> There are two functions `isElsterSteuernummerValid()` and `isSteuernummerValid()` depending on the format of your input.
 
 #### Alternative
 
@@ -125,7 +129,8 @@ use Rechtlogisch\Steuernummer\Validate;
 
 You can get a list of errors explaining why the provided input is invalid. The `run()` method on each class returns a DTO with a `getErrors()` method.
 
-Hint: The keys of `getErrors()` hold the stringified reference to the exception class. You can check for a particular error by comparing to the `::class` constant. For example: `Rechtlogisch\Steuernummer\Exceptions\InvalidElsterSteuernummerLength::class`.
+> [!NOTE]
+> The keys of `getErrors()` hold the stringified reference to the exception class. You can check for a particular error by comparing to the `::class` constant. For example: `Rechtlogisch\Steuernummer\Exceptions\InvalidElsterSteuernummerLength::class`.
 
 ### Validation errors
 
@@ -169,7 +174,8 @@ use Rechtlogisch\Steuernummer\Denormalize;
 // ]
 ```
 
-Hint: All `*Result::class` extend the [ResultDto](./src/Abstracts/ResultDto.php).
+> [!NOTE]
+> All `*Result::class` extend the [ResultDto](./src/Abstracts/ResultDto.php).
 
 ### Supported tax offices
 
