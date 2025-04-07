@@ -2,6 +2,12 @@
 
 All notable changes to `steuernummer` will be documented in this file.
 
+## v1.1.2 - 2025-04-07
+
+- Adds BUFA 1138 (added with ERiC 41.5.4)
+
+**Full Changelog**: https://github.com/rechtlogisch/steuernummer/compare/v1.1.1...v1.1.2
+
 ## v1.1.1 - 2024-11-07
 
 - Adds four new test tax offices in BY
