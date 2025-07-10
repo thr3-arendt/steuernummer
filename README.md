@@ -1,10 +1,11 @@
-![Recht logisch Steuernummer banner image](rechtlogisch-steuernummer-banner.png)
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/rechtlogisch/steuernummer.svg?style=flat-square)](https://packagist.org/packages/rechtlogisch/steuernummer)
-[![Tests](https://github.com/rechtlogisch/steuernummer/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/rechtlogisch/steuernummer/actions/workflows/run-tests.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/rechtlogisch/steuernummer.svg?style=flat-square)](https://packagist.org/packages/rechtlogisch/steuernummer)
+[![Tests](https://github.com/rechtlogisch/steuernummer/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/thr3-arendt/steuernummer/actions/workflows/run-tests.yml)
 
-# steuernummer
+# steuernummer fork for php 7.2
+
+This is a fork of https://github.com/rechtlogisch/steuernummer/ meant to run on php 7.2. 
+Code and tests were modified.
+Consider this untested and unsupported.
 
 > Normalize, denormalize and validate German tax numbers (Steuernummer)
 
@@ -214,6 +215,7 @@ If you discover any security-related issues, please email open-source@rechtlogis
 ## Credits
 
 - [Krzysztof Tomasz Zembrowski](https://github.com/rechtlogisch)
+- [Johann Arendt](https://github.com/thr3-arendt)
 - [All Contributors](../../contributors)
 
 ## License

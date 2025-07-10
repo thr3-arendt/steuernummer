@@ -15,9 +15,11 @@ use Rechtlogisch\Steuernummer\Exceptions\InvalidFederalState;
 
 class Common
 {
-    protected string $elsterSteuernummer;
+    /** @var string|null */
+    protected $elsterSteuernummer;
 
-    protected string $federalState;
+    /** @var string|null */
+    protected $federalState;
 
     public function __construct(?string $elsterSteuernummer = null, ?string $federalState = null)
     {
@@ -31,7 +33,7 @@ class Common
 
     public function guardFederalState(): void
     {
-        if (! array_key_exists($this->federalState, Constants::FEDERAL_STATES_DETAILS)) {
+        if (! array_key_exists((string) $this->federalState, Constants::FEDERAL_STATES_DETAILS)) {
             // https://www.iso.org/obp/ui/#iso:code:3166:DE
             throw new InvalidFederalState('federalState must be an ISO 3166-2:DE code (two last characters)');
         }
@@ -87,7 +89,7 @@ class Common
 
     public function guardBufa(?string $input = null): void
     {
-        $bufa = (int) substr($input ?? $this->elsterSteuernummer, 0, Constants::BUFA_LENGTH);
+        $bufa = (int) substr($input ?? $this->elsterSteuernummer ?? '', 0, Constants::BUFA_LENGTH);
         $federalState = $this->federalState ?? $this->determineFederalState();
         $supported = Bufas::SUPPORTED[$federalState] ?? [];
         $test = (getenv('STEUERNUMMER_PRODUCTION') === 'true') ? [] : Bufas::TEST;
@@ -98,8 +100,8 @@ class Common
 
     protected function determineFederalState(): string
     {
-        $twoFirstDigits = (int) substr($this->elsterSteuernummer, 0, 2);
-        $firstDigit = (int) $this->elsterSteuernummer[0];
+        $twoFirstDigits = (int) substr($this->elsterSteuernummer ?? '', 0, 2);
+        $firstDigit = isset($this->elsterSteuernummer[0]) ? (int) $this->elsterSteuernummer[0] : 0;
 
         $federalState = Constants::TAX_OFFICE_PREFIXES[$twoFirstDigits] ?? Constants::TAX_OFFICE_PREFIXES[$firstDigit] ?? null;
 
@@ -108,7 +110,7 @@ class Common
         }
 
         $expectedBufaLength = Constants::BUFA_LENGTH;
-        $bufa = substr($this->elsterSteuernummer, 0, $expectedBufaLength);
+        $bufa = substr($this->elsterSteuernummer ?? '', 0, $expectedBufaLength);
         if (($actualBufaLength = strlen($bufa)) < 4) {
             throw new InvalidElsterSteuernummerLength("bufa in elsterSteuernummer must be {$expectedBufaLength} digits long. You provided: {$actualBufaLength} digits.");
         }

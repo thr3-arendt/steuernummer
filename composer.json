@@ -20,12 +20,10 @@
         }
     ],
     "require": {
-        "php": "^8.1"
+        "php": "^7.2|^8.1"
     },
     "require-dev": {
-        "laravel/pint": "^1.18",
-        "pestphp/pest": "^2.36|^3.5",
-        "pestphp/pest-plugin-type-coverage": "^2.8|^3.1",
+        "phpunit/phpunit": "*",
         "phpstan/phpstan": "^1.10|^2.0",
         "phpstan/phpstan-deprecation-rules": "^1.0|^2.0"
     },
@@ -44,8 +42,6 @@
     },
     "scripts": {
         "analyse": "vendor/bin/phpstan analyse",
-        "arch": "vendor/bin/pest --group=arch --no-coverage",
-        "coverage": "XDEBUG_MODE=coverage vendor/bin/pest --coverage --min=98",
         "format": "vendor/bin/pint",
         "quality": [
             "@arch",
@@ -55,8 +51,7 @@
             "@types",
             "@coverage"
         ],
-        "test": "vendor/bin/pest --exclude-group=manual --exclude-group=arch --no-coverage",
-        "types": "vendor/bin/pest --type-coverage --min=100"
+        "test": "vendor/phpunit/phpunit/phpunit"
     },
     "config": {
         "sort-packages": true,

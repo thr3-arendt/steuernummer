@@ -1,67 +1,79 @@
 <?php
 
+namespace Tests\Unit;
+
 /** @noinspection StaticClosureCanBeUsedInspection */
 
+use PHPUnit\Framework\TestCase;
 use Rechtlogisch\Steuernummer\Constants;
 
-it('list validation procedures with federal state names', function () {
-    $result = Constants::listValidationProcedures();
+class ConstantsTest extends TestCase
+{
+    function test_list_validation_procedures_with_federal_state_names(): void
+    {
+        $result = Constants::listValidationProcedures();
 
-    ksort($result);
+        ksort($result);
 
-    // print_r($result);
+        // print_r($result);
 
-    expect($result)->toBeArray();
-});
+        $this->assertIsArray($result);
+    }
 
-it('groups validation procedures by method name', function () {
-    $result = Constants::groupValidationProcedures();
+    function test_groups_validation_procedures_by_method_name(): void
+    {
+        $result = Constants::groupValidationProcedures();
 
-    // print_r($result);
+        // print_r($result);
 
-    expect($result)->toBeArray();
-});
+        $this->assertIsArray($result);
+    }
 
-it('groups factors by factor digits', function () {
-    $result = Constants::groupFactors();
+    function test_groups_factors_by_factor_digits(): void
+    {
+        $result = Constants::groupFactors();
 
-    // print_r($result);
+        // print_r($result);
 
-    expect($result)->toBeArray();
-});
+        $this->assertIsArray($result);
+    }
 
-it('lists federal states names with iso code keys', function () {
-    $result = Constants::federalStatesNames();
+    function test_lists_federal_states_names_with_iso_code_keys(): void
+    {
+        $result = Constants::federalStatesNames();
 
-    // print_r($result);
+        // print_r($result);
 
-    expect($result)->toBeArray();
-});
+        $this->assertIsArray($result);
+    }
 
-it('lists federal states codes', function () {
-    $result = Constants::federalStatesCodes();
+    function test_lists_federal_states_codes(): void
+    {
+        $result = Constants::federalStatesCodes();
 
-    // print_r(implode(', ', $result));
+        // print_r(implode(', ', $result));
 
-    expect($result)->toBeArray();
-});
+        $this->assertIsArray($result);
+    }
 
-it('lists federal states codes with steuernummer 10 digits', function () {
-    $result = Constants::FEDERAL_STATES_STEUERNUMMER_10_DIGITS;
+    function test_lists_federal_states_codes_with_steuernummer_10_digits(): void
+    {
+        $result = Constants::FEDERAL_STATES_STEUERNUMMER_10_DIGITS;
 
-    // print_r(implode(', ', $result));
+        // print_r(implode(', ', $result));
 
-    expect($result)
-        ->toBeArray()
-        ->toBe(['BE', 'BW', 'HB', 'HH', 'NI', 'RP', 'SH']);
-});
+        $this->assertIsArray($result);
+        $this->assertEquals(['BE', 'BW', 'HB', 'HH', 'NI', 'RP', 'SH'], $result);
+    }
 
-it('lists federal states codes with steuernummer 11 digits', function () {
-    $result = Constants::federalStatesSteuernummer11Digits();
+    function test_lists_federal_states_codes_with_steuernummer_11_digits(): void
+    {
+        $result = Constants::federalStatesSteuernummer11Digits();
 
-    // print_r(implode(', ', $result));
+        // print_r(implode(', ', $result));
 
-    expect(array_values($result))
-        ->toBeArray()
-        ->toBe(['BB', 'BY', 'HE', 'MV', 'NW', 'SL', 'SN', 'ST', 'TH']);
-});
+        $values = array_values($result);
+        $this->assertIsArray($values);
+        $this->assertSame(['BB', 'BY', 'HE', 'MV', 'NW', 'SL', 'SN', 'ST', 'TH'], $values);
+    }
+}

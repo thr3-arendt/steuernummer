@@ -1,9 +1,29 @@
 <?php
 
+namespace Tests\Datasets;
+
 use Rechtlogisch\Steuernummer\Constants;
 
-dataset('federal-states', Constants::federalStatesCodes());
+class FederalStates
+{
+    public function federalStateProvider(): array
+    {
+        return array_map(function ($code) {
+            return [$code];
+        }, Constants::federalStatesCodes());
+    }
 
-dataset('federal-states-steuernummer-10-digits', Constants::FEDERAL_STATES_STEUERNUMMER_10_DIGITS);
+    public function federalStatesSteuerNummer10DigitsProvider(): array
+    {
+        return array_map(function ($code) {
+            return [$code];
+        }, Constants::FEDERAL_STATES_STEUERNUMMER_10_DIGITS);
+    }
 
-dataset('federal-states-steuernummer-11-digits', Constants::federalStatesSteuernummer11Digits());
+    public function federalStatesSteuerNummer11DigitsProvider(): array
+    {
+        return array_map(function ($code) {
+            return [$code];
+        }, Constants::federalStatesSteuernummer11Digits());
+    }
+}

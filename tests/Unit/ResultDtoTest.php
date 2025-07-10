@@ -1,10 +1,17 @@
 <?php
 
+namespace Tests\Unit;
+
+use PHPUnit\Framework\TestCase;
 use Rechtlogisch\Steuernummer\Dto\ValidationResult;
 
-it('returns null as first error when no errors set', function () {
-    $dto = new ValidationResult;
-    $firstError = $dto->getFirstError();
+class ResultDtoTest extends TestCase
+{
+    function test_returns_null_as_first_error_when_no_errors_set(): void
+    {
+        $dto = new ValidationResult;
+        $firstError = $dto->getFirstError();
 
-    expect($firstError)->toBeNull();
-});
+        $this->assertNull($firstError);
+    }
+}

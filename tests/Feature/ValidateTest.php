@@ -1,49 +1,67 @@
 <?php
 
+namespace Tests\Feature;
+
 /** @noinspection StaticClosureCanBeUsedInspection */
 
+use PHPUnit\Framework\TestCase;
 use Rechtlogisch\Steuernummer\Validate;
 
-it('validates tax number', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
-    $result = (new Validate($elsterSteuernummer))
-        ->run();
+class ValidateTest extends TestCase
+{
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumberProvider() */
+    function test_validates_tax_number(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+    {
+        $result = (new Validate($elsterSteuernummer))
+            ->run();
 
-    expect($result->isValid())->toBeTrue();
-})->with('tax-numbers');
+        $this->assertTrue($result->isValid());
+    }
 
-it('validates tax number with provided federalState', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
-    $result = (new Validate($elsterSteuernummer, $federalState))
-        ->run();
 
-    expect($result->isValid())->toBeTrue();
-})->with('tax-numbers');
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumberProvider() */
+    function test_validates_tax_number_with_provided_federalState(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+    {
+        $result = (new Validate($elsterSteuernummer, $federalState))
+            ->run();
 
-it('returns false and an error when incorrect federalState provided', function () {
-    $elsterSteuernummer = '1121081508150'; // from BE
-    $result = (new Validate($elsterSteuernummer, 'NW'))
-        ->run();
+        $this->assertTrue($result->isValid());
+    }
 
-    expect($result->isValid())->toBeFalse()
-        ->and($result->getFirstError())->toContain('BUFA 1121 is not supported in federalState NW');
-});
+    function test_returns_false_and_an_error_when_incorrect_federalState_provided(): void
+    {
+        $elsterSteuernummer = '1121081508150'; // from BE
+        $result = (new Validate($elsterSteuernummer, 'NW'))
+            ->run();
 
-it('validates edge cases from BE', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
-    $result = (new Validate($elsterSteuernummer, $federalState))
-        ->run();
+        $this->assertFalse($result->isValid());
+        $this->assertContains('BUFA 1121 is not supported in federalState NW', $result->getFirstError());
+    }
 
-    expect($result->isValid())->toBeTrue();
-})->with('tax-numbers-edge-cases-be-valid');
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumbersEdgeCasesBeValidProvider() */
+    function test_validates_edge_cases_from_BE(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+    {
+        $result = (new Validate($elsterSteuernummer, $federalState))
+            ->run();
 
-it('return false for invalid elsterSteuernummer', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
-    $result = (new Validate($elsterSteuernummer, $federalState))
-        ->run();
+        $this->assertTrue($result->isValid());
+    }
 
-    expect($result->isValid())->toBeFalse();
-})->with('tax-numbers-invalid');
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumbersInvalidProvider() */
+    function test_return_false_for_invalid_elsterSteuernummer(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+    {
+        $result = (new Validate($elsterSteuernummer, $federalState))
+            ->run();
 
-it('return false for elsterSteuernummer edge cases from BE', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
-    $result = (new Validate($elsterSteuernummer, $federalState))
-        ->run();
+        $this->assertFalse($result->isValid());
+    }
 
-    expect($result->isValid())->toBeFalse();
-})->with('tax-numbers-edge-cases-be-invalid');
+    /** @dataProvider \Tests\Datasets\EdgeCases::taxNumbersEdgeCasesBeInvalid() */
+    function test_return_false_for_elsterSteuernummer_edge_cases_from_BE(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+    {
+        $result = (new Validate($elsterSteuernummer, $federalState))
+            ->run();
+
+        $this->assertFalse($result->isValid());
+    }
+}

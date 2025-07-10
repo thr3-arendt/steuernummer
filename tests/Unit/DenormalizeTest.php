@@ -1,83 +1,106 @@
 <?php
 
+namespace Tests\Unit;
+
 /** @noinspection StaticClosureCanBeUsedInspection */
 
+use PHPUnit\Framework\TestCase;
 use Rechtlogisch\Steuernummer\Denormalize;
 use Rechtlogisch\Steuernummer\Dto\DenormalizationResult;
 use Rechtlogisch\Steuernummer\Exceptions;
 
-it('checks the happy path', function () {
-    $input = '1121081508150';
-    $result = (new Denormalize($input, 'BE'))
-        ->run();
+class DenormalizeTest extends TestCase
+{
+    function test_checks_the_happy_path(): void
+    {
+        $input = '1121081508150';
+        $result = (new Denormalize($input, 'BE'))
+            ->run();
 
-    expect($result)->toBeInstanceOf(DenormalizationResult::class)
-        ->and($result->isValid())->toBeTrue()
-        ->and($result->getInput())->toBeString()->toBe($input)
-        ->and($result->getOutput())->toBeString()->toBe('21/815/08150')
-        ->and($result->getFederalState())->toBeString()->toBe('BE')
-        ->and($result->getErrors())->toBeEmpty();
-});
+        $this->assertInstanceOf(DenormalizationResult::class, $result);
+        $this->assertNotNull($result);
+        $this->assertTrue($result->isValid());
+        $this->assertSame($input, $result->getInput());
+        $this->assertSame('21/815/08150', $result->getOutput());
+        $this->assertSame('BE', $result->getFederalState());
+        $this->assertEmpty($result->getErrors());
+    }
 
-it('fails when elsterSteuernummer is too short', function (string $federalState) {
-    $result = (new Denormalize('123456789012', $federalState))
-        ->run();
+    /** @dataProvider \Tests\Datasets\FederalStates::federalStateProvider */
+    function test_fails_when_elsterSteuernummer_is_too_short(string $federalState): void
+    {
+        $result = (new Denormalize('123456789012', $federalState))
+            ->run();
 
-    expect($result->isValid())->toBeFalse()
-        ->and($result->getFirstErrorKey())->toBe(Exceptions\InvalidElsterSteuernummerLength::class);
-})->with('federal-states');
+        $this->assertFalse($result->isValid());
+        $this->assertSame(Exceptions\InvalidElsterSteuernummerLength::class, $result->getFirstErrorKey());
+    }
 
-it('fails when the federal state is too short and federal state not provided', function () {
-    $result = (new Denormalize('1'))
-        ->run();
+    function test_fails_when_the_federal_state_is_too_short_and_federal_state_not_provided(): void
+    {
+        $result = (new Denormalize('1'))
+            ->run();
 
-    expect($result->isValid())->toBeFalse()
-        ->and($result->getFirstErrorKey())->toBe(Exceptions\InvalidElsterSteuernummerLength::class);
-});
+        $this->assertFalse($result->isValid());
+        $this->assertSame(Exceptions\InvalidElsterSteuernummerLength::class, $result->getFirstErrorKey());
+    }
 
-it('fails when steuernummer is too long', function (string $federalState) {
-    $result = (new Denormalize('12345678901234', $federalState))
-        ->run();
+    /** @dataProvider \Tests\Datasets\FederalStates::federalStateProvider */
+    function test_fails_when_steuernummer_is_too_long(string $federalState): void
+    {
+        $result = (new Denormalize('12345678901234', $federalState))
+            ->run();
 
-    expect($result->isValid())->toBeFalse()
-        ->and($result->getFirstErrorKey())->toBe(Exceptions\InvalidElsterSteuernummerLength::class);
-})->with('federal-states');
+        $this->assertFalse($result->isValid());
+        $this->assertSame(Exceptions\InvalidElsterSteuernummerLength::class, $result->getFirstErrorKey());
+    }
 
-it('returns only denormalized string', function () {
-    $denormalized = (new Denormalize('1121081508150', 'BE'))
-        ->returnSteuernummerOnly();
+    function test_returns_only_denormalized_string(): void
+    {
+        $denormalized = (new Denormalize('1121081508150', 'BE'))
+            ->returnSteuernummerOnly();
 
-    expect($denormalized)->toBeString();
-});
+        $this->assertIsString($denormalized);
+    }
 
-it('returns only denormalized string when valid elsterSteuernummer as int provided', function () {
-    // PHP casts int to string due to the type hint in class constructor
-    // https://www.php.net/manual/en/language.types.string.php#language.types.string.casting
-    /** @phpstan-ignore-next-line */
-    $denormalized = (new Denormalize(1121081508150, 'BE'))
-        ->returnSteuernummerOnly();
+    function test_returns_only_denormalized_string_when_valid_elsterSteuernummer_as_int_provided(): void
+    {
+        // PHP casts int to string due to the type hint in class constructor
+        // https://www.php.net/manual/en/language.types.string.php#language.types.string.casting
+        /** @phpstan-ignore-next-line */
+        $denormalized = (new Denormalize(1121081508150, 'BE'))
+            ->returnSteuernummerOnly();
 
-    expect($denormalized)->toBeString();
-});
+        $this->assertIsString($denormalized);
+    }
 
-it('fails when elsterSteuernummer is not string(able)', function () {
-    $input = new stdClass;
-    /** @noinspection PhpParamsInspection @phpstan-ignore-next-line */
-    new Denormalize($input, 'XX');
-})->throws(TypeError::class);
+    function test_fails_when_elsterSteuernummer_is_not_stringable(): void
+    {
+        $input = new \stdClass;
+        $this->expectException(\TypeError::class);
+        /** @noinspection PhpParamsInspection @phpstan-ignore-next-line */
+        new Denormalize($input, 'XX');
+    }
 
-it('fails when elsterSteuernummer is null', function () {
-    /** @phpstan-ignore-next-line */
-    new Denormalize(null, 'XX');
-})->throws(TypeError::class);
+    function test_fails_when_elsterSteuernummer_is_null(): void
+    {
+        $this->expectException(\TypeError::class);
+        /** @phpstan-ignore-next-line */
+        new Denormalize(null, 'XX');
+    }
 
-it('fails on invalid federal states', function () {
-    (new Denormalize('1121081508150', 'XX'))
-        ->guardFederalState();
-})->throws(Exceptions\InvalidFederalState::class);
+    function test_fails_on_invalid_federal_states(): void
+    {
+        $this->expectException(Exceptions\InvalidFederalState::class);
+        (new Denormalize('1121081508150', 'XX'))
+            ->guardFederalState();
+    }
 
-it('fails when federalState is not string(able)', function () {
-    $input = new stdClass;
-    /** @noinspection PhpParamsInspection @phpstan-ignore-next-line */
-    new Denormalize('1121081508150', $input);
-})->throws(TypeError::class);
+    function test_fails_when_federalState_is_not_stringable(): void
+    {
+        $input = new \stdClass;
+        $this->expectException(\TypeError::class);
+        /** @noinspection PhpParamsInspection @phpstan-ignore-next-line */
+        new Denormalize('1121081508150', $input);
+    }
+}

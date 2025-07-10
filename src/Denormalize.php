@@ -9,11 +9,8 @@ use Throwable;
 
 class Denormalize extends Common
 {
-    private DenormalizationResult $result;
-
-    protected string $elsterSteuernummer;
-
-    protected string $federalState;
+    /** @var DenormalizationResult */
+    private $result;
 
     public function __construct(string $elsterSteuernummer, ?string $federalState = null)
     {
@@ -49,12 +46,12 @@ class Denormalize extends Common
         $districtLength = $federalStateDetails['districtLength'] ?? Constants::DISTRICT_LENGTH_DEFAULT;
 
         $taxOfficeIndexStart = strlen($taxOfficePrefix);
-        $taxOfficeSuffix = substr($this->elsterSteuernummer, $taxOfficeIndexStart, Constants::BUFA_LENGTH - $taxOfficeIndexStart);
+        $taxOfficeSuffix = substr($this->elsterSteuernummer ?? '', $taxOfficeIndexStart, Constants::BUFA_LENGTH - $taxOfficeIndexStart);
 
-        $district = substr($this->elsterSteuernummer, Constants::DISTRICT_INDEX_START, $districtLength);
+        $district = substr($this->elsterSteuernummer ?? '', Constants::DISTRICT_INDEX_START, $districtLength);
 
         $districtIndexEnd = Constants::DISTRICT_INDEX_START + $districtLength;
-        $uniqueAndChecksum = substr($this->elsterSteuernummer, $districtIndexEnd);
+        $uniqueAndChecksum = substr($this->elsterSteuernummer ?? '', $districtIndexEnd);
 
         [$firstSeparator, $secondSeparator] = $federalStateDetails['separators'] ?? Constants::SEPARATORS_DEFAULT;
 

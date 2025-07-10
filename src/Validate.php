@@ -13,19 +13,23 @@ use Throwable;
 
 class Validate extends Common
 {
-    private ValidationResult $result;
+    /** @var ValidationResult */
+    private $result;
 
-    protected string $elsterSteuernummer;
+    /** @var string */
+    protected $elsterSteuernummer;
 
-    protected string $federalState;
+    /** @var string */
+    protected $federalState;
 
-    private string $validationProcedure;
+    /** @var string|null */
+    private $validationProcedure;
 
     /** @var int[] */
-    private array $factors;
+    private $factors;
 
     /** @var int[] */
-    private array $summands;
+    private $summands;
 
     public function __construct(string $elsterSteuernummer, ?string $federalState = null)
     {

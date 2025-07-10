@@ -1,40 +1,61 @@
 <?php
 
+namespace Tests\Unit;
+
 /** @noinspection StaticClosureCanBeUsedInspection */
 
+use PHPUnit\Framework\TestCase;
 use Rechtlogisch\Steuernummer\Common;
 use Rechtlogisch\Steuernummer\Exceptions;
 
-afterEach(function () {
-    putenv('STEUERNUMMER_PRODUCTION=');
-});
+class BufaTest extends TestCase
+{
+    public function tearDown(): void
+    {
+        putenv('STEUERNUMMER_PRODUCTION=');
+    }
 
-it('fails for test bufa with federal when environment is production', function (string $federalState, string $bufa) {
-    putenv('STEUERNUMMER_PRODUCTION=true');
-    (new Common($bufa, $federalState))
-        ->guardBufa();
-})->with('bufas-test-valid')->throws(Exceptions\InvalidBufa::class);
+    /** @dataProvider \Tests\Datasets\Bufas::bufasTestValidProvider() */
+    function test_fails_for_test_bufa_with_federal_when_environment_is_production(string $federalState, string $bufa): void
+    {
+        putenv('STEUERNUMMER_PRODUCTION=true');
+        $this->expectException(Exceptions\InvalidBufa::class);
+        (new Common($bufa, $federalState))
+            ->guardBufa();
+    }
 
-it('does not throw exception for test bufa with federal state when environment is not production', function (string $federalState, string $bufa) {
-    putenv('STEUERNUMMER_PRODUCTION=false');
-    (new Common($bufa, $federalState))
-        ->guardBufa();
-})->with('bufas-test-valid')->throwsNoExceptions();
+    /** @dataProvider \Tests\Datasets\Bufas::bufasTestValidProvider() */
+    function test_does_not_throw_exception_for_test_bufa_with_federal_state_when_environment_is_not_production(string $federalState, string $bufa): void
+    {
+        putenv('STEUERNUMMER_PRODUCTION=false');
+        (new Common($bufa, $federalState))
+            ->guardBufa();
 
-it('fails for test bufa without federal state when environment is production', function (string $bufa) {
-    putenv('STEUERNUMMER_PRODUCTION=true');
-    (new Common($bufa))
-        ->guardBufa();
-})->with(['3098'])->throws(Exceptions\InvalidBufa::class);
+        $this->assertTrue(true);
+    }
 
-it('does not throw exception for test bufa without federal state when environment is not production', function (string $bufa) {
-    putenv('STEUERNUMMER_PRODUCTION=false');
-    (new Common($bufa))
-        ->guardBufa();
-})->with(['3098'])->throwsNoExceptions();
+    function test_fails_for_test_bufa_without_federal_state_when_environment_is_production(): void
+    {
+        putenv('STEUERNUMMER_PRODUCTION=true');
+        $this->expectException(Exceptions\InvalidBufa::class);
+        (new Common('3098'))
+            ->guardBufa();
+    }
 
-it('fails for non existing test bufa without federal state when environment is not production', function (string $bufa) {
-    putenv('STEUERNUMMER_PRODUCTION=false');
-    (new Common($bufa))
-        ->guardBufa();
-})->with(['7777'])->throws(Exceptions\InvalidBufa::class);
+    function test_does_not_throw_exception_for_test_bufa_without_federal_state_when_environment_is_not_production(): void
+    {
+        putenv('STEUERNUMMER_PRODUCTION=false');
+        (new Common('3098'))
+            ->guardBufa();
+
+        $this->assertTrue(true);
+    }
+
+    function test_fails_for_non_existing_test_bufa_without_federal_state_when_environment_is_not_production(): void
+    {
+        putenv('STEUERNUMMER_PRODUCTION=false');
+        $this->expectException(Exceptions\InvalidBufa::class);
+        (new Common('7777'))
+            ->guardBufa();
+    }
+}

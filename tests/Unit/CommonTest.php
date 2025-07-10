@@ -1,51 +1,92 @@
 <?php
 
+namespace Tests\Unit;
+
 /** @noinspection StaticClosureCanBeUsedInspection */
 
+use PHPUnit\Framework\TestCase;
 use Rechtlogisch\Steuernummer\Common;
 use Rechtlogisch\Steuernummer\Constants;
 use Rechtlogisch\Steuernummer\Exceptions;
 
-it('passes on valid federal states', function (string $federalState) {
-    $common = new Common(null, $federalState);
-    $common->guardFederalState();
+class CommonTest extends TestCase
+{
+    function stateProvider(): array
+    {
+        return [
+            ['BB'],
+            ['BE'],
+            ['BW'],
+            ['BY'],
+            ['HB'],
+            ['HE'],
+            ['HH'],
+            ['MV'],
+            ['NI'],
+            ['NW'],
+            ['RP'],
+            ['SH'],
+            ['SL'],
+            ['SN'],
+            ['ST'],
+            ['TH'],
+        ];
+    }
 
-    expect(1)->toBe(1);
-})->with(['BB', 'BE', 'BW', 'BY', 'HB', 'HE', 'HH', 'MV', 'NI', 'NW', 'RP', 'SH', 'SL', 'SN', 'ST', 'TH']);
+    /** @dataProvider stateProvider() */
+    function test_passes_on_valid_federal_states(string $federalState): void
+    {
+        $common = new Common(null, $federalState);
+        $common->guardFederalState();
 
-it('fails on invalid federal states', function () {
-    (new Common(null, 'XX'))
-        ->guardFederalState();
-})->throws(Exceptions\InvalidFederalState::class);
+        $this->assertTrue(true);
+    }
 
-it('passes on elsterSteuernummer with correct syntax', function () {
-    $common = new Common('1234012345678', 'XX');
-    $common->guardElsterSteuernummer();
+    function test_fails_on_invalid_federal_states(): void
+    {
+        $this->expectException(Exceptions\InvalidFederalState::class);
+        (new Common(null, 'XX'))
+            ->guardFederalState();
+    }
 
-    expect(1)->toBe(1);
-});
+    function test_passes_on_elsterSteuernummer_with_correct_syntax(): void
+    {
+        $common = new Common('1234012345678', 'XX');
+        $common->guardElsterSteuernummer();
 
-it('fails when elsterSteuernummer contains non-digits', function () {
+        $this->assertTrue(true);
+    }
+
+    function test_fails_when_elsterSteuernummer_contains_non_digits () {
+    $this->expectException(Exceptions\ElsterSteuernummerCanContainOnlyDigits::class);
     (new Common('X', 'XX'))
         ->guardElsterSteuernummer();
-})->throws(Exceptions\ElsterSteuernummerCanContainOnlyDigits::class);
+}
 
-it('fails when elsterSteuernummer is too short', function () {
+function test_fails_when_elsterSteuernummer_is_too_short(): void
+{
+    $this->expectException(Exceptions\InvalidElsterSteuernummerLength::class);
     (new Common('123401234567', 'XX'))
         ->guardElsterSteuernummer();
-})->throws(Exceptions\InvalidElsterSteuernummerLength::class);
+}
 
-it('fails when elsterSteuernummer is too long', function () {
+function test_fails_when_elsterSteuernummer_is_too_long(): void
+{
+    $this->expectException(Exceptions\InvalidElsterSteuernummerLength::class);
     (new Common('12340123456789', 'XX'))
         ->guardElsterSteuernummer();
-})->throws(Exceptions\InvalidElsterSteuernummerLength::class);
+}
 
-it('fails when the formatKey is not zero', function () {
+function test_fails_when_the_formatKey_is_not_zero(): void
+{
+    $this->expectException(Exceptions\InvalidElsterSteuernummerFormatKey::class);
     (new Common('1234912345678', 'XX'))
         ->guardElsterSteuernummer();
-})->throws(Exceptions\InvalidElsterSteuernummerFormatKey::class);
+}
 
-it('fails when an invalid district is being provided', function (string $federalState) {
+/** @dataProvider \Tests\Datasets\FederalStates::federalStateProvider() */
+function test_fails_when_an_invalid_district_is_being_provided(string $federalState): void
+{
     $districtsNotAllowed = ['000', '998', '999'];
 
     foreach ($districtsNotAllowed as $district) {
@@ -56,45 +97,72 @@ it('fails when an invalid district is being provided', function (string $federal
         }
 
         $elsterSteuernummer = '12340'.$district.$suffix;
+        $this->expectException(Exceptions\InvalidDistrict::class);
 
         (new Common($elsterSteuernummer, $federalState))
             ->guardElsterSteuernummer();
     }
-})->with('federal-states')->throws(Exceptions\InvalidDistrict::class);
+}
 
-it('fails when an invalid district is being provided in NW', function () {
+function test_fails_when_an_invalid_district_is_being_provided_in_NW(): void
+{
     $districtsNotAllowed = ['0000', '0998', '0999'];
 
     foreach ($districtsNotAllowed as $district) {
         $elsterSteuernummer = '12340'.$district.'5678';
 
+        $this->expectException(Exceptions\InvalidDistrict::class);
         (new Common($elsterSteuernummer, 'NW'))
             ->guardElsterSteuernummer();
     }
-})->throws(Exceptions\InvalidDistrict::class);
+}
 
-it('fails when an invalid district lower than 100 is being provided in specific federal states', function (string $federalState) {
+function districtLowerThan100Provider(): array
+{
+    return [
+        ['BB'],
+        ['BY'],
+        ['MV'],
+        ['SL'],
+        ['SN'],
+        ['ST'],
+        ['TH'],
+    ];
+}
+
+/** @dataProvider districtLowerThan100Provider() */
+function test_fails_when_an_invalid_district_lower_than_100_is_being_provided_in_specific_federal_states(string $federalState): void
+{
     $district = '099';
     $elsterSteuernummer = '12340'.$district.'45678';
+    $this->expectException(Exceptions\InvalidDistrict::class);
     (new Common($elsterSteuernummer, $federalState))
         ->guardElsterSteuernummer();
-})->with(['BB', 'BY', 'MV', 'SL', 'SN', 'ST', 'TH'])->throws(Exceptions\InvalidDistrict::class);
+}
 
-it('fails when unplausible unique numbers and checksum is provided in NW', function () {
+function test_fails_when_unplausible_unique_numbers_and_checksum_is_provided_in_NW(): void
+{
     $unplausible = '0001';
     $elsterSteuernummer = '123401234'.$unplausible;
+    $this->expectException(Exceptions\InvalidElsterSteuernummer::class);
     (new Common($elsterSteuernummer, 'NW'))
         ->guardElsterSteuernummer();
-})->throws(Exceptions\InvalidElsterSteuernummer::class);
+}
 
-it('fails when a not supported bufa is provided', function (string $federalState, string $bufa) {
+/** @dataProvider \Tests\Datasets\Bufas::bufasInvalidProvider() */
+function test_fails_when_a_not_supported_bufa_is_provided(string $federalState, string $bufa): void
+{
+    $this->expectException(Exceptions\InvalidBufa::class);
     (new Common($bufa, $federalState))
         ->guardBufa();
-})->with('bufas-invalid')->throws(Exceptions\InvalidBufa::class);
+}
 
-it('passes when a supported bufa is provided', function (string $federalState, string $bufa) {
+/** @dataProvider \Tests\Datasets\Bufas::bufasValidProvider() */
+function test_passes_when_a_supported_bufa_is_provided(string $federalState, string $bufa): void
+{
     (new Common($bufa, $federalState))
         ->guardBufa();
 
-    expect(1)->toBe(1);
-})->with('bufas-valid');
+    $this->assertTrue(true);
+}
+}

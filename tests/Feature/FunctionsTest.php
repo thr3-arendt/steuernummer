@@ -1,86 +1,101 @@
 <?php
 
+namespace Tests\Feature;
+
+use PHPUnit\Framework\TestCase;
 use Rechtlogisch\Steuernummer\Exceptions\InvalidElsterSteuernummerCheckDigit;
 use Rechtlogisch\Steuernummer\Exceptions\InvalidSteuernummerLength;
 
-it('normalizes a steuernummer with the global normalizeSteuernummer() function', function () {
-    $result = normalizeSteuernummer('21/815/08150', 'BE');
+class FunctionsTest extends TestCase
+{
+    function test_normalizes_a_steuernummer_with_the_global_normalizeSteuernummer(): void
+    {
+        $result = normalizeSteuernummer('21/815/08150', 'BE');
 
-    expect($result)
-        ->toBeString()
-        ->toBe('1121081508150');
-});
+        $this->assertSame('1121081508150', $result);
+    }
 
-it('return false when invalid steuernummer with the global normalizeSteuernummer() function', function () {
-    $result = normalizeSteuernummer('00/815/08150', 'BE');
+    function test_return_false_when_invalid_steuernummer_with_the_global_normalizeSteuernummer(): void
+    {
+        $result = normalizeSteuernummer('00/815/08150', 'BE');
 
-    expect($result)
-        ->toBeNull();
-});
+        $this->assertNull($result);
+    }
 
-it('denormalizes an elster-steuernummer with the global denormalizeSteuernummer() function', function () {
-    $result = denormalizeSteuernummer('1121081508150');
+    function test_denormalizes_an_elster_steuernummer_with_the_global_denormalizeSteuernummer(): void
+    {
+        $result = denormalizeSteuernummer('1121081508150');
 
-    expect($result)->toBe('21/815/08150');
-});
+        $this->assertSame('21/815/08150', $result);
+    }
 
-it('denormalizes an elster-steuernummer with the global denormalizeSteuernummer() function and returns details', function () {
-    /** @var array{steuernummer: string, federalState: string} $result */
-    $result = denormalizeSteuernummer('1121081508150', returnWithFederalState: true);
-    expect($result)
-        ->toBeArray()
-        ->and($result['steuernummer'])->toBe('21/815/08150')
-        ->and($result['federalState'])->toBe('BE');
-});
+    function test_denormalizes_an_elster_steuernummer_with_the_global_denormalizeSteuernummer_function_and_returns_details(): void
+    {
+        /** @var array{steuernummer: string, federalState: string} $result */
+        $result = denormalizeSteuernummer('1121081508150', null, true);
+        $this->assertIsArray($result);
+        $this->assertSame('21/815/08150', $result['steuernummer']);
+        $this->assertSame('BE', $result['federalState']);
+    }
 
-it('validates an elster-steuernummer with the global validateElsterSteuernummer() function', function () {
-    $result = validateElsterSteuernummer('1121081508150');
-    expect($result->isValid())->toBeTrue();
-});
+    function test_validates_an_elster_steuernummer_with_the_global_validateElsterSteuernummer(): void
+    {
+        $result = validateElsterSteuernummer('1121081508150');
+        $this->assertTrue($result->isValid());
+    }
 
-it('checks if a elster steuernummer is valid with global isElsterSteuernummerValid() and without a federal state function', function () {
-    $result = isElsterSteuernummerValid('1121081508150');
-    expect($result)->toBeTrue();
-});
+    function test_checks_if_a_elster_steuernummer_is_valid_with_global_isElsterSteuernummerValid_and_without_a_federal_state_function(): void
+    {
+        $result = isElsterSteuernummerValid('1121081508150');
+        $this->assertTrue($result);
+    }
 
-it('checks if a elster steuernummer is valid with global isElsterSteuernummerValid() and with a federal state function', function () {
-    $result = isElsterSteuernummerValid('1121081508150', 'BE');
-    expect($result)->toBeTrue();
-});
+    function test_checks_if_a_elster_steuernummer_is_valid_with_global_isElsterSteuernummerValid_and_with_a_federal_state_function(): void
+    {
+        $result = isElsterSteuernummerValid('1121081508150', 'BE');
+        $this->assertTrue($result);
+    }
 
-it('validates a steuernummer with the global validateSteuernummer() function', function () {
-    $result = validateSteuernummer('21/815/08150', 'BE');
-    expect($result->isValid())->toBeTrue()
-        ->and($result->getErrors())->toBeEmpty();
-});
+    function test_validates_a_steuernummer_with_the_global_validateSteuernummer(): void
+    {
+        $result = validateSteuernummer('21/815/08150', 'BE');
+        $this->assertTrue($result->isValid());
+        $this->assertEmpty($result->getErrors());
+    }
 
-it('returns errors for invalid steuernummer with the global validateSteuernummer() function', function () {
-    $result = validateSteuernummer('21/815/08151', 'BE');
+    function test_returns_errors_for_invalid_steuernummer_with_the_global_validateSteuernummer(): void
+    {
+        $result = validateSteuernummer('21/815/08151', 'BE');
 
-    expect($result->isValid())->toBeFalse()
-        ->and($result->getErrors())->not()->toBeEmpty()
-        ->and($result->getFirstErrorKey())->toBe(InvalidElsterSteuernummerCheckDigit::class);
-});
+        $this->assertFalse($result->isValid());
+        $this->assertNotEmpty($result->getErrors());
+        $this->assertSame(InvalidElsterSteuernummerCheckDigit::class, $result->getFirstErrorKey());
+    }
 
-it('returns errors for irrational steuernummer with the global validateSteuernummer() function', function () {
-    $result = validateSteuernummer('1', 'BE');
+    function test_returns_errors_for_irrational_steuernummer_with_the_global_validateSteuernummer(): void
+    {
+        $result = validateSteuernummer('1', 'BE');
 
-    expect($result->isValid())->toBeFalse()
-        ->and($result->getErrors())->not()->toBeEmpty()
-        ->and($result->getFirstErrorKey())->toBe(InvalidSteuernummerLength::class);
-});
+        $this->assertFalse($result->isValid());
+        $this->assertNotEmpty($result->getErrors());
+        $this->assertSame(InvalidSteuernummerLength::class, $result->getFirstErrorKey());
+    }
 
-it('checks if a steuernummer is valid with global isSteuernummerValid() function', function () {
-    $result = isSteuernummerValid('21/815/08150', 'BE');
-    expect($result)->toBeTrue();
-});
+    function test_checks_if_a_steuernummer_is_valid_with_global_isSteuernummerValid(): void
+    {
+        $result = isSteuernummerValid('21/815/08150', 'BE');
+        $this->assertTrue($result);
+    }
 
-it('returns false when steuernummer is invalid with global isSteuernummerValid() function', function () {
-    $result = isSteuernummerValid('21/815/08151', 'BE');
-    expect($result)->toBeFalse();
-});
+    function test_returns_false_when_steuernummer_is_invalid_with_global_isSteuernummerValid(): void
+    {
+        $result = isSteuernummerValid('21/815/08151', 'BE');
+        $this->assertFalse($result);
+    }
 
-it('returns false when provided steuernummer is irrational with global isSteuernummerValid() function', function () {
-    $result = isSteuernummerValid('1', 'BE');
-    expect($result)->toBeFalse();
-});
+    function test_returns_false_when_provided_steuernummer_is_irrational_with_global_isSteuernummerValid(): void
+    {
+        $result = isSteuernummerValid('1', 'BE');
+        $this->assertFalse($result);
+    }
+}

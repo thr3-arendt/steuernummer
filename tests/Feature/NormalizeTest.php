@@ -1,40 +1,52 @@
 <?php
 
+namespace Tests\Feature;
+
 /** @noinspection StaticClosureCanBeUsedInspection */
 
+use PHPUnit\Framework\TestCase;
 use Rechtlogisch\Steuernummer\Exceptions\InvalidBufa;
 use Rechtlogisch\Steuernummer\Normalize;
 
-it('normalizes tax number', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
-    $result = (new Normalize($steuernummer, $federalState))
-        ->run();
+class NormalizeTest extends TestCase
+{
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumberProvider() */
+    function test_normalizes_tax_number(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+    {
+        $result = (new Normalize($steuernummer, $federalState))
+            ->run();
 
-    expect($result->isValid())->toBeTrue()
-        ->and($result->getOutput())->toBe($elsterSteuernummer);
-})->with('tax-numbers');
+        $this->assertTrue($result->isValid());
+        $this->assertSame($elsterSteuernummer, $result->getOutput());
+    }
 
-it('normalizes tax number returning only elster steuernummer', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
-    $result = (new Normalize($steuernummer, $federalState))
-        ->returnElsterSteuernummerOnly();
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumberProvider() */
+    function test_normalizes_tax_number_returning_only_elster_steuernummer(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+    {
+        $result = (new Normalize($steuernummer, $federalState))
+            ->returnElsterSteuernummerOnly();
 
-    expect($result)->toBeString()
-        ->toBe($elsterSteuernummer);
-})->with('tax-numbers');
+        $this->assertSame($elsterSteuernummer, $result);
+    }
 
-it('normalizes edge cases from BE', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
-    $result = (new Normalize($steuernummer, $federalState))
-        ->run();
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumbersEdgeCasesBeValidProvider() */
+    function test_normalizes_edge_cases_from_BE(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+    {
+        $result = (new Normalize($steuernummer, $federalState))
+            ->run();
 
-    expect($result->isValid())->toBeTrue()
-        ->and($result->getOutput())->toBe($elsterSteuernummer);
-})->with('tax-numbers-edge-cases-be-valid');
+        $this->assertTrue($result->isValid());
+        $this->assertSame($elsterSteuernummer, $result->getOutput());
+    }
 
-it('returns errors when steuernummer with not whitelisted bufa is being tried to be normalized', function () {
-    $result = (new Normalize('00/815/08150', 'BE'))
-        ->run();
+    function test_returns_errors_when_steuernummer_with_not_whitelisted_bufa_is_being_tried_to_be_normalized(): void
+    {
+        $result = (new Normalize('00/815/08150', 'BE'))
+            ->run();
 
-    expect($result->isValid())->toBeFalse()
-        ->and($result->getErrors())->not()->toBeEmpty()
-        ->and($result->getFirstErrorKey())->toBe(InvalidBufa::class)
-        ->and($result->getOutput())->toBeNull();
-});
+        $this->assertFalse($result->isValid());
+        $this->assertNotEmpty($result->getErrors());
+        $this->assertSame(InvalidBufa::class, $result->getFirstErrorKey());
+        $this->assertNull($result->getOutput());
+    }
+}

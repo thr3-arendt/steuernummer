@@ -11,11 +11,11 @@ use Throwable;
 
 class Normalize extends Common
 {
-    private NormalizationResult $result;
+    /** @var NormalizationResult */
+    private $result;
 
-    protected string $steuernummer;
-
-    protected string $federalState;
+    /** @var string */
+    protected $steuernummer;
 
     public function __construct(string $steuernummer, string $federalState)
     {

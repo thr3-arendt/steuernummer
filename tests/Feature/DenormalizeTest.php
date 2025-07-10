@@ -1,55 +1,61 @@
 <?php
 
+namespace Tests\Feature;
+
 /** @noinspection StaticClosureCanBeUsedInspection */
 
 use Rechtlogisch\Steuernummer\Denormalize;
 use Rechtlogisch\Steuernummer\Exceptions\InvalidBufa;
+use PHPUnit\Framework\TestCase;
 
-it('denormalizes tax number without provided federalState', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
+class DenormalizeTest extends TestCase
+{
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumberProvider() */
+function test_denormalizesTaxNumberWithoutProvidedFederalState(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+{
     $denormalized = (new Denormalize($elsterSteuernummer))
         ->returnSteuernummerOnly();
 
-    expect($denormalized)
-        ->toBeString()
-        ->toBe($steuernummer);
-})->with('tax-numbers');
+    $this->assertSame($steuernummer, $denormalized);
+}
 
-it('denormalizes tax number with provided federalState', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumberProvider() */
+function test_denormalizesTaxNumberWithProvidedFederalState(string $federalState, string $steuernummer, string $elsterSteuernummer): void
+{
     $denormalized = (new Denormalize($elsterSteuernummer, $federalState))
         ->returnSteuernummerOnly();
 
-    expect($denormalized)
-        ->toBeString()
-        ->toBe($steuernummer);
-})->with('tax-numbers');
+    $this->assertSame($steuernummer, $denormalized);
+}
 
-it('denormalizes tax number and return result together with federalState', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumberProvider() */
+function test_denormalizesTaxNumberAndReturnResultTogetherWithFederalState (string $federalState, string $steuernummer, string $elsterSteuernummer): void
+{
     $result = (new Denormalize($elsterSteuernummer))
         ->returnWithFederalState();
 
-    expect($result)
-        ->toBeArray()
-        ->and($result['steuernummer'])
-        ->toBe($steuernummer)
-        ->and($result['federalState'])
-        ->toBe($federalState);
-})->with('tax-numbers');
+    $this->assertIsArray($result);
+    $this->assertSame($steuernummer, $result['steuernummer']);
+    $this->assertSame($federalState, $result['federalState']);
+}
 
-it('denormalizes edge cases from BE', function (string $federalState, string $steuernummer, string $elsterSteuernummer) {
+    /** @dataProvider \Tests\Datasets\TaxNumbers::taxNumbersEdgeCasesBeValidProvider() */
+function test_denormalizesEdgeCasesFromBE (string $federalState, string $steuernummer, string $elsterSteuernummer): void
+{
     $denormalized = (new Denormalize($elsterSteuernummer, $federalState))
         ->returnSteuernummerOnly();
 
-    expect($denormalized)
-        ->toBeString()
-        ->toBe($steuernummer);
-})->with('tax-numbers-edge-cases-be-valid');
+    $this->assertSame($steuernummer, $denormalized);
+}
 
-it('returns errors when steuernummer with not whitelisted bufa is being tried to be denormalized', function () {
+function test_returnsErrorsWhenSteuernummerWithNotWhitelistedBufaIsBeingTriedToBeDenormalized (): void
+{
     $denormalized = (new Denormalize('1100081508150', 'BE'))
         ->run();
 
-    expect($denormalized->isValid())->toBeFalse()
-        ->and($denormalized->getErrors())->not()->toBeEmpty()
-        ->and($denormalized->getFirstErrorKey())->toBe(InvalidBufa::class)
-        ->and($denormalized->getOutput())->toBeNull();
-});
+    $this->assertFalse($denormalized->isValid());
+    $this->assertNotEmpty($denormalized->getErrors());
+    $this->assertEquals(InvalidBufa::class, $denormalized->getFirstErrorKey());
+    $this->assertNull($denormalized->getOutput());
+}
+}
