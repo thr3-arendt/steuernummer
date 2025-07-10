@@ -3,7 +3,8 @@
 
 # steuernummer fork for php 7.2
 
-This is a fork of https://github.com/rechtlogisch/steuernummer/ meant to run on php 7.2. 
+This is a fork of https://github.com/rechtlogisch/steuernummer/ meant to run on (deprecated) php 7.2.
+Only use this if you require older php versions.
 Code and tests were modified.
 Consider this untested and unsupported.
 
@@ -18,10 +19,21 @@ Based on the [official ELSTER documentation](https://download.elster.de/download
 
 ## Installation
 
-You can install the package via composer:
+You can install the package via composer. You must first add this repository to your `composer.json`:
+
+```json
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/thr3-arendt/steuernummer"
+    }
+],
+```
+
+Then you can require the package:
 
 ```bash
-composer require rechtlogisch/steuernummer
+composer require rechtlogisch/steuernummer:0.1.1
 ```
 
 ## Usage

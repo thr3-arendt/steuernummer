@@ -17,10 +17,15 @@
             "name": "Krzysztof Tomasz Zembrowski",
             "email": "zembrowski@users.noreply.github.com",
             "role": "Developer"
+        },
+        {
+            "name": "Johann Arendt",
+            "email": "thr3-arendt@users.noreply.github.com",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": "^7.2|^8.1"
+        "php": "^7.2|^8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*",

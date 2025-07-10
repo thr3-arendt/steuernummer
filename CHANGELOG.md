@@ -2,6 +2,10 @@
 
 All notable changes to `steuernummer` will be documented in this file.
 
+## v0.1.1 
+
+- updates readme for installation instructions
+
 ## v0.1.0 PHP 7.2 compatibility
 
 - removes PHP features incompatible with 7.2
