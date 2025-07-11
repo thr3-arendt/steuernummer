@@ -2,6 +2,11 @@
 
 All notable changes to `steuernummer` will be documented in this file.
 
+## v0.1.2
+
+- Fixes Unit/ValidateTest checking for ValidationResult
+- Adds polyfills for `array_key_first` and `array_key_last`
+
 ## v0.1.1 
 
 - updates readme for installation instructions

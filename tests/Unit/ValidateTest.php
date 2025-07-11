@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 /** @noinspection StaticClosureCanBeUsedInspection */
 
-use PHPUnit\Framework\Constraint\TraversableContainsEqual;
 use PHPUnit\Framework\TestCase;
 use Rechtlogisch\Steuernummer\Dto\ValidationResult;
 use Rechtlogisch\Steuernummer\Validate;
@@ -15,14 +14,26 @@ class ValidateTest extends TestCase
     {
         $result = new Validate('1121081508150', 'BE');
         $this->assertIsObject($result);
-        // TODO: check if Validate contains ValidationResult
+
+        $r = new \ReflectionObject($result);
+        $validationResult = $r->getProperty('result');
+        $validationResult->setAccessible(true);
+        $this->assertInstanceOf(ValidationResult::class, $validationResult->getValue($result));
+
+        $this->assertInstanceOf(ValidationResult::class, $result->run());
     }
 
     function test_returns_a_ValidationResult_on_invalid_input(): void
     {
         $result = new Validate('1', 'X');
         $this->assertIsObject($result);
-        // TODO: check if Validate contains ValidationResult
+
+        $r = new \ReflectionObject($result);
+        $validationResult = $r->getProperty('result');
+        $validationResult->setAccessible(true);
+        $this->assertInstanceOf(ValidationResult::class, $validationResult->getValue($result));
+
+        $this->assertInstanceOf(ValidationResult::class, $result->run());
     }
 
     function test_fails_when_no_elsterSteuernummer_was_provided(): void

@@ -25,7 +25,8 @@
         }
     ],
     "require": {
-        "php": "^7.2|^8.0"
+        "php": "^7.2|^8.0",
+        "symfony/polyfill-php73": "^1.32"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
@@ -66,5 +67,13 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "replace": {
+        "symfony/polyfill-php54": "*",
+        "symfony/polyfill-php55": "*",
+        "symfony/polyfill-php56": "*",
+        "symfony/polyfill-php70": "*",
+        "symfony/polyfill-php71": "*",
+        "symfony/polyfill-php72": "*"
+    }
 }
