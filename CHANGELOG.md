@@ -2,6 +2,10 @@
 
 All notable changes to `steuernummer` will be documented in this file.
 
+## v1.0.0 PHP 7.4 compatibility
+
+- Requires PHP 7.4
+
 ## v0.1.2
 
 - Fixes Unit/ValidateTest checking for ValidationResult

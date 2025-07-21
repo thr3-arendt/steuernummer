@@ -1,9 +1,9 @@
 
 [![Tests](https://github.com/rechtlogisch/steuernummer/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/thr3-arendt/steuernummer/actions/workflows/run-tests.yml)
 
-# steuernummer fork for php 7.2
+# steuernummer fork for php 7.4
 
-This is a fork of https://github.com/rechtlogisch/steuernummer/ meant to run on (deprecated) php 7.2.
+This is a fork of https://github.com/rechtlogisch/steuernummer/ meant to run on (deprecated) php 7.4.
 Only use this if you require older php versions.
 Code and tests were modified.
 Consider this untested and unsupported.
@@ -33,8 +33,10 @@ You can install the package via composer. You must first add this repository to 
 Then you can require the package:
 
 ```bash
-composer require rechtlogisch/steuernummer:0.1.1
+composer require rechtlogisch/steuernummer:^1.0.0
 ```
+
+To support PHP 7.2, use `^0.1`
 
 ## Usage
 
