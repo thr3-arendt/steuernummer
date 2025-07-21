@@ -15,11 +15,9 @@ use Rechtlogisch\Steuernummer\Exceptions\InvalidFederalState;
 
 class Common
 {
-    /** @var string|null */
-    protected $elsterSteuernummer;
+    protected string $elsterSteuernummer;
 
-    /** @var string|null */
-    protected $federalState;
+    protected string $federalState;
 
     public function __construct(?string $elsterSteuernummer = null, ?string $federalState = null)
     {

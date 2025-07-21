@@ -8,8 +8,7 @@ use Rechtlogisch\Steuernummer\Abstracts\DeNormalizationDto;
 
 final class DenormalizationResult extends DeNormalizationDto
 {
-    /** @var string|null */
-    private $federalState = null;
+    private ?string $federalState = null;
 
     public function setFederalState(string $federalState): void
     {

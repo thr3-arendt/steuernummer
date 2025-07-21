@@ -6,11 +6,9 @@ namespace Rechtlogisch\Steuernummer\Abstracts;
 
 abstract class DeNormalizationDto extends ResultDto
 {
-    /** @var string|null */
-    private $input = null;
+    private ?string $input = null;
 
-    /** @var string|null */
-    private $output = null;
+    private ?string $output = null;
 
     public function setInput(?string $input): void
     {

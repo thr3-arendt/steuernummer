@@ -6,11 +6,10 @@ namespace Rechtlogisch\Steuernummer\Abstracts;
 
 abstract class ResultDto
 {
-    /** @var null|bool */
-    private $valid = null;
+    private ?bool $valid = null;
 
     /** @var string[]|null */
-    private $errors = null;
+    private ?array $errors = null;
 
     public function isValid(): ?bool
     {

@@ -9,8 +9,7 @@ use Throwable;
 
 class Denormalize extends Common
 {
-    /** @var DenormalizationResult */
-    private $result;
+    private DenormalizationResult $result;
 
     public function __construct(string $elsterSteuernummer, ?string $federalState = null)
     {
